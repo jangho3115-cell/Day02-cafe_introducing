@@ -7,17 +7,198 @@
   <meta name="description" content="김포 걸포동 브루잉로드. 매일 아침 볶는 싱글 오리진 핸드드립, 플랫화이트, 바스크치즈케이크. 걸포북변역에서 도보 5분.">
 
   <style>
-    /* 3단계(디자인)에서 작성 */
+    /* ---------- 색상: 우드톤 (색을 바꾸려면 여기만 고치면 됩니다) ---------- */
+    :root {
+      --bg: #f4ecdf;          /* 밝은 크림 배경 */
+      --surface: #fffaf1;     /* 카드 바탕 */
+      --text: #3a2a1d;        /* 짙은 다크 브라운 글자 */
+      --muted: #6f5a47;       /* 보조 글자 */
+      --wood: #8a5a3a;        /* 포인트·버튼 우드 브라운 */
+      --wood-dark: #4a3020;   /* 히어로·푸터 바탕 */
+      --line: #e0cfb6;        /* 연한 우드 구분선 */
+      --highlight: #f3e1c4;   /* 오늘 줄 강조 */
+      --closed: #a03a28;      /* 휴무 표시 */
+      --on-dark: #f8f0e2;     /* 어두운 바탕 위 글자 */
+      --radius: 14px;
+    }
+
+    /* ---------- 기본 ---------- */
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+    }
+    h1, h2, p, ul { margin: 0; }
+    ul { padding: 0; list-style: none; }
+    a { color: inherit; }
+
+    /* ---------- 히어로 ---------- */
+    #hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 44px 20px 36px;
+      color: var(--on-dark);
+      background:
+        repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 2px, transparent 2px 38px),
+        linear-gradient(180deg, #5a3b27, var(--wood-dark));
+    }
+    #hero h1 {
+      font-size: 2.4rem;
+      line-height: 1.2;
+      letter-spacing: .02em;
+    }
+    #hero .slogan {
+      margin-top: 10px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #f1d9b0;
+    }
+    #hero .info {
+      margin-top: 6px;
+      font-size: .95rem;
+      opacity: .85;
+    }
+    #hero .actions { margin-top: 26px; }
+
+    /* ---------- 버튼 ---------- */
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      width: 100%;
+      max-width: 380px;
+    }
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 52px;
+      padding: 0 12px;
+      border: 2px solid var(--wood);
+      border-radius: 12px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: transform .08s ease, background-color .15s ease;
+    }
+    .btn:active { transform: scale(.97); }
+    .btn:focus-visible { outline: 3px solid #e0a95c; outline-offset: 3px; }
+    .btn-primary { background: var(--wood); color: #fff; }
+    .btn-secondary { background: transparent; color: var(--wood); }
+    /* 어두운 히어로 위에서는 색을 뒤집는다 */
+    #hero .btn-primary { background: var(--on-dark); border-color: var(--on-dark); color: var(--wood-dark); }
+    #hero .btn-secondary { border-color: var(--on-dark); color: var(--on-dark); }
+
+    /* ---------- 본문 구역 (카드) ---------- */
+    main {
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 20px 16px 8px;
+    }
+    main section {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 22px 20px;
+      margin-bottom: 16px;
+    }
+    h2 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      font-size: 1.25rem;
+      line-height: 1.3;
+    }
+    h2::before {
+      content: "";
+      width: 5px;
+      height: 1.1em;
+      border-radius: 3px;
+      background: var(--wood);
+    }
+
+    /* 메뉴: 이름 ↔ 가격 한 줄 정렬 */
+    #menu li {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px dashed var(--line);
+    }
+    #menu li:last-child { border-bottom: 0; padding-bottom: 0; }
+    #menu li:first-child { padding-top: 0; }
+    #menu li span:first-child { font-size: 1.08rem; }
+    #menu li span:last-child { font-weight: 700; color: var(--wood); white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+    /* 영업시간 */
+    #today-status {
+      margin-bottom: 12px;
+      font-weight: 700;
+      color: var(--wood);
+    }
+    #today-status:empty { display: none; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 11px 10px; text-align: left; border-bottom: 1px solid var(--line); }
+    td { text-align: right; font-variant-numeric: tabular-nums; }
+    tr:last-child th, tr:last-child td { border-bottom: 0; }
+    th { font-weight: 600; }
+    tr:not([data-open]) td { color: var(--closed); font-weight: 700; }   /* 휴무 강조 */
+    tr.today { background: var(--highlight); }                           /* 오늘 줄 강조 */
+    tr.today th { box-shadow: inset 4px 0 0 var(--wood); }
+
+    /* 공간 안내: 알약 모양 */
+    #space ul { display: flex; flex-wrap: wrap; gap: 8px; }
+    #space li {
+      padding: 6px 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--bg);
+      font-size: .98rem;
+    }
+
+    /* 위치 */
+    #location .address { font-size: 1.1rem; font-weight: 700; }
+    #location .station { margin-top: 2px; color: var(--muted); }
+    #location .actions { margin-top: 18px; max-width: none; }
+
+    /* ---------- 푸터 ---------- */
+    footer {
+      margin-top: 8px;
+      padding: 28px 20px 36px;
+      text-align: center;
+      color: var(--on-dark);
+      background: var(--wood-dark);
+    }
+    footer p:first-child { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
+    footer a { text-underline-offset: 3px; }
+
+    /* ---------- 넓은 화면: 가운데에 좁게 모아 깨지지 않게 ---------- */
+    @media (min-width: 700px) {
+      #hero { padding: 64px 20px 52px; }
+      #hero h1 { font-size: 3rem; }
+      main { padding-top: 28px; }
+    }
   </style>
 </head>
 <body>
 
   <header id="hero">
     <h1>브루잉로드</h1>
-    <p>매일 아침 볶는 싱글 오리진</p>
-    <p>2019년 오픈 · 원두 직접 로스팅</p>
-    <a href="tel:031-000-0000" id="btn-call">전화하기</a>
-    <a href="https://map.naver.com/p/search/%EA%B2%BD%EA%B8%B0%EB%8F%84%20%EA%B9%80%ED%8F%AC%EC%8B%9C%20%EA%B1%B8%ED%8F%AC%EB%8F%99%201563-2" id="btn-map" target="_blank" rel="noopener">지도 보기</a>
+    <p class="slogan">매일 아침 볶는 싱글 오리진</p>
+    <p class="info">2019년 오픈 · 원두 직접 로스팅</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="tel:031-000-0000" id="btn-call">전화하기</a>
+      <a class="btn btn-secondary" href="https://map.naver.com/p/search/%EA%B2%BD%EA%B8%B0%EB%8F%84%20%EA%B9%80%ED%8F%AC%EC%8B%9C%20%EA%B1%B8%ED%8F%AC%EB%8F%99%201563-2" id="btn-map" target="_blank" rel="noopener">지도 보기</a>
+    </div>
   </header>
 
   <main>
@@ -58,10 +239,12 @@
 
     <section id="location">
       <h2>위치 안내</h2>
-      <p>경기도 김포시 걸포동 1563-2</p>
-      <p>걸포북변역에서 도보 5분</p>
-      <a href="tel:031-000-0000" id="btn-call-2">전화하기</a>
-      <a href="https://map.naver.com/p/search/%EA%B2%BD%EA%B8%B0%EB%8F%84%20%EA%B9%80%ED%8F%AC%EC%8B%9C%20%EA%B1%B8%ED%8F%AC%EB%8F%99%201563-2" id="btn-map-2" target="_blank" rel="noopener">지도 보기</a>
+      <p class="address">경기도 김포시 걸포동 1563-2</p>
+      <p class="station">걸포북변역에서 도보 5분</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="tel:031-000-0000" id="btn-call-2">전화하기</a>
+        <a class="btn btn-secondary" href="https://map.naver.com/p/search/%EA%B2%BD%EA%B8%B0%EB%8F%84%20%EA%B9%80%ED%8F%AC%EC%8B%9C%20%EA%B1%B8%ED%8F%AC%EB%8F%99%201563-2" id="btn-map-2" target="_blank" rel="noopener">지도 보기</a>
+      </div>
     </section>
 
   </main>
