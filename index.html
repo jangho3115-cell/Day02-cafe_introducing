@@ -16,15 +16,15 @@
     <h1>브루잉로드</h1>
     <p>매일 아침 볶는 싱글 오리진</p>
     <p>2019년 오픈 · 원두 직접 로스팅</p>
-    <!-- 버튼 자리: 연결은 2단계에서 -->
-    <a href="#" id="btn-call">전화하기</a>
-    <a href="#" id="btn-map">지도 보기</a>
+    <a href="tel:031-000-0000" id="btn-call">전화하기</a>
+    <a href="https://map.naver.com/p/search/%EA%B2%BD%EA%B8%B0%EB%8F%84%20%EA%B9%80%ED%8F%AC%EC%8B%9C%20%EA%B1%B8%ED%8F%AC%EB%8F%99%201563-2" id="btn-map" target="_blank" rel="noopener">지도 보기</a>
   </header>
 
   <main>
 
     <section id="menu">
       <h2>메뉴</h2>
+      <!-- 메뉴·가격을 바꿀 때는 이 목록만 고치면 됩니다 -->
       <ul>
         <li><span>핸드드립</span> <span>6,000원</span></li>
         <li><span>플랫화이트</span> <span>5,000원</span></li>
@@ -34,11 +34,15 @@
 
     <section id="hours">
       <h2>영업시간</h2>
-      <table>
+      <p id="today-status"></p>
+      <!-- 영업시간을 바꿀 때는 이 표만 고치면 됩니다.
+           data-days: 요일 번호(일=0, 월=1 ... 토=6), data-open/data-close: 열고 닫는 시각(24시간제).
+           data-open이 없는 줄은 휴무입니다. -->
+      <table id="hours-table">
         <tbody>
-          <tr><th scope="row">월요일</th><td>휴무</td></tr>
-          <tr><th scope="row">화~금 (평일)</th><td>08:00 ~ 20:00</td></tr>
-          <tr><th scope="row">토·일 (주말)</th><td>10:00 ~ 18:00</td></tr>
+          <tr data-days="1"><th scope="row">월요일</th><td>휴무</td></tr>
+          <tr data-days="2,3,4,5" data-open="08:00" data-close="20:00"><th scope="row">화~금 (평일)</th><td>08:00 ~ 20:00</td></tr>
+          <tr data-days="0,6" data-open="10:00" data-close="18:00"><th scope="row">토·일 (주말)</th><td>10:00 ~ 18:00</td></tr>
         </tbody>
       </table>
     </section>
@@ -56,21 +60,60 @@
       <h2>위치 안내</h2>
       <p>경기도 김포시 걸포동 1563-2</p>
       <p>걸포북변역에서 도보 5분</p>
-      <!-- 버튼 자리: 연결은 2단계에서 -->
-      <a href="#" id="btn-call-2">전화하기</a>
-      <a href="#" id="btn-map-2">지도 보기</a>
+      <a href="tel:031-000-0000" id="btn-call-2">전화하기</a>
+      <a href="https://map.naver.com/p/search/%EA%B2%BD%EA%B8%B0%EB%8F%84%20%EA%B9%80%ED%8F%AC%EC%8B%9C%20%EA%B1%B8%ED%8F%AC%EB%8F%99%201563-2" id="btn-map-2" target="_blank" rel="noopener">지도 보기</a>
     </section>
 
   </main>
 
   <footer>
     <p>브루잉로드</p>
-    <p>전화: 031-000-0000</p>
-    <p>인스타그램: @brewingroad</p>
+    <p>전화: <a href="tel:031-000-0000">031-000-0000</a></p>
+    <p>인스타그램: <a href="https://www.instagram.com/brewingroad/" target="_blank" rel="noopener">@brewingroad</a></p>
   </footer>
 
   <script>
-    // 2단계(기능)에서 작성
+    // 오늘 영업 상태 표시 (보조 기능: 실패해도 나머지 정보는 그대로 보임)
+    // 영업시간 데이터는 #hours-table 의 data-* 속성을 읽어 쓰므로 따로 고칠 곳이 없다.
+    (function () {
+      var statusEl = document.getElementById('today-status');
+      var rows = document.querySelectorAll('#hours-table tr[data-days]');
+      if (!statusEl || !rows.length) return;
+
+      // 손님이 어디 있든 한국 시간 기준으로 계산
+      var parts = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Asia/Seoul', weekday: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23'
+      }).formatToParts(new Date());
+      var get = function (type) {
+        return parts.filter(function (p) { return p.type === type; })[0].value;
+      };
+      var day = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(get('weekday'));
+      var nowMin = parseInt(get('hour'), 10) * 60 + parseInt(get('minute'), 10);
+
+      var toMin = function (hhmm) {
+        var t = hhmm.split(':');
+        return parseInt(t[0], 10) * 60 + parseInt(t[1], 10);
+      };
+
+      var todayRow = null;
+      rows.forEach(function (row) {
+        if (row.dataset.days.split(',').indexOf(String(day)) !== -1) todayRow = row;
+      });
+      if (!todayRow) return;
+      todayRow.classList.add('today'); // 3단계에서 오늘 줄 강조에 사용
+
+      var open = todayRow.dataset.open;
+      var close = todayRow.dataset.close;
+      if (!open) {
+        statusEl.textContent = '오늘은 쉬는 날이에요.';
+      } else if (nowMin < toMin(open)) {
+        statusEl.textContent = '오늘 ' + open + '에 문을 열어요.';
+      } else if (nowMin < toMin(close)) {
+        statusEl.textContent = '지금 영업 중이에요. (' + close + '까지)';
+      } else {
+        statusEl.textContent = '오늘 영업이 끝났어요.';
+      }
+    })();
   </script>
 </body>
 </html>
