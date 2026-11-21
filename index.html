@@ -125,35 +125,35 @@
       background: var(--wood);
     }
 
-    /* 메뉴: 이름 ↔ 가격 한 줄 정렬 */
-    #menu li {
+    /* 대표메뉴: 가로 카드 3개 (한 줄에 나란히) */
+    .menu-cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .menu-cards li {
       display: flex;
+      flex-direction: column;
       justify-content: space-between;
-      align-items: baseline;
-      gap: 12px;
-      padding: 12px 0;
-      border-bottom: 1px dashed var(--line);
+      align-items: center;
+      gap: 8px;
+      padding: 16px 6px;
+      text-align: center;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 12px;
     }
-    #menu li:last-child { border-bottom: 0; padding-bottom: 0; }
-    #menu li:first-child { padding-top: 0; }
-    #menu li span:first-child { font-size: 1.08rem; }
-    #menu li span:last-child { font-weight: 700; color: var(--wood); white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .menu-cards .name { font-size: .95rem; font-weight: 700; line-height: 1.35; }
+    .menu-cards .price { color: var(--wood); font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
 
-    /* 영업시간 */
-    #today-status {
-      margin-bottom: 12px;
-      font-weight: 700;
-      color: var(--wood);
+    /* 영업시간 한 줄: 대표메뉴 섹션 오른쪽 하단 */
+    #hours {
+      margin-top: 16px;
+      text-align: right;
+      font-size: clamp(.74rem, 3.3vw, .9rem);
+      color: var(--muted);
     }
-    #today-status:empty { display: none; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 11px 10px; text-align: left; border-bottom: 1px solid var(--line); }
-    td { text-align: right; font-variant-numeric: tabular-nums; }
-    tr:last-child th, tr:last-child td { border-bottom: 0; }
-    th { font-weight: 600; }
-    tr:not([data-open]) td { color: var(--closed); font-weight: 700; }   /* 휴무 강조 */
-    tr.today { background: var(--highlight); }                           /* 오늘 줄 강조 */
-    tr.today th { box-shadow: inset 4px 0 0 var(--wood); }
+    #hours .closed { color: var(--closed); font-weight: 700; }   /* 월요일 휴무 강조 */
 
     /* 공간 안내: 알약 모양 */
     #space ul { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -180,6 +180,14 @@
     }
     footer p:first-child { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
     footer a { text-underline-offset: 3px; }
+    /* 인스타그램 버튼: 어두운 푸터 위 테두리 버튼 */
+    footer .btn-ig {
+      max-width: 300px;
+      margin: 16px auto 0;
+      border-color: var(--on-dark);
+      color: var(--on-dark);
+      text-decoration: none;
+    }
 
     /* ---------- 넓은 화면: 가운데에 좁게 모아 깨지지 않게 ---------- */
     @media (min-width: 700px) {
@@ -204,28 +212,15 @@
   <main>
 
     <section id="menu">
-      <h2>메뉴</h2>
+      <h2>대표메뉴</h2>
       <!-- 메뉴·가격을 바꿀 때는 이 목록만 고치면 됩니다 -->
-      <ul>
-        <li><span>핸드드립</span> <span>6,000원</span></li>
-        <li><span>플랫화이트</span> <span>5,000원</span></li>
-        <li><span>바스크치즈케이크</span> <span>7,000원</span></li>
+      <ul class="menu-cards">
+        <li><span class="name">핸드드립</span><span class="price">6,000원</span></li>
+        <li><span class="name">플랫화이트</span><span class="price">5,000원</span></li>
+        <li><span class="name">바스크치즈케이크</span><span class="price">7,000원</span></li>
       </ul>
-    </section>
-
-    <section id="hours">
-      <h2>영업시간</h2>
-      <p id="today-status"></p>
-      <!-- 영업시간을 바꿀 때는 이 표만 고치면 됩니다.
-           data-days: 요일 번호(일=0, 월=1 ... 토=6), data-open/data-close: 열고 닫는 시각(24시간제).
-           data-open이 없는 줄은 휴무입니다. -->
-      <table id="hours-table">
-        <tbody>
-          <tr data-days="1"><th scope="row">월요일</th><td>휴무</td></tr>
-          <tr data-days="2,3,4,5" data-open="08:00" data-close="20:00"><th scope="row">화~금 (평일)</th><td>08:00 ~ 20:00</td></tr>
-          <tr data-days="0,6" data-open="10:00" data-close="18:00"><th scope="row">토·일 (주말)</th><td>10:00 ~ 18:00</td></tr>
-        </tbody>
-      </table>
+      <!-- 영업시간을 바꿀 때는 이 한 줄만 고치면 됩니다 -->
+      <p id="hours">평일 8-20시 · 주말 10-18시 · <span class="closed">월요일 휴무</span></p>
     </section>
 
     <section id="space">
@@ -252,51 +247,8 @@
   <footer>
     <p>브루잉로드</p>
     <p>전화: <a href="tel:031-000-0000">031-000-0000</a></p>
-    <p>인스타그램: <a href="https://www.instagram.com/brewingroad/" target="_blank" rel="noopener">@brewingroad</a></p>
+    <a class="btn btn-ig" href="https://www.instagram.com/brewingroad/" id="btn-ig" target="_blank" rel="noopener">인스타그램 @brewingroad</a>
   </footer>
 
-  <script>
-    // 오늘 영업 상태 표시 (보조 기능: 실패해도 나머지 정보는 그대로 보임)
-    // 영업시간 데이터는 #hours-table 의 data-* 속성을 읽어 쓰므로 따로 고칠 곳이 없다.
-    (function () {
-      var statusEl = document.getElementById('today-status');
-      var rows = document.querySelectorAll('#hours-table tr[data-days]');
-      if (!statusEl || !rows.length) return;
-
-      // 손님이 어디 있든 한국 시간 기준으로 계산
-      var parts = new Intl.DateTimeFormat('en-US', {
-        timeZone: 'Asia/Seoul', weekday: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23'
-      }).formatToParts(new Date());
-      var get = function (type) {
-        return parts.filter(function (p) { return p.type === type; })[0].value;
-      };
-      var day = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(get('weekday'));
-      var nowMin = parseInt(get('hour'), 10) * 60 + parseInt(get('minute'), 10);
-
-      var toMin = function (hhmm) {
-        var t = hhmm.split(':');
-        return parseInt(t[0], 10) * 60 + parseInt(t[1], 10);
-      };
-
-      var todayRow = null;
-      rows.forEach(function (row) {
-        if (row.dataset.days.split(',').indexOf(String(day)) !== -1) todayRow = row;
-      });
-      if (!todayRow) return;
-      todayRow.classList.add('today'); // 3단계에서 오늘 줄 강조에 사용
-
-      var open = todayRow.dataset.open;
-      var close = todayRow.dataset.close;
-      if (!open) {
-        statusEl.textContent = '오늘은 쉬는 날이에요.';
-      } else if (nowMin < toMin(open)) {
-        statusEl.textContent = '오늘 ' + open + '에 문을 열어요.';
-      } else if (nowMin < toMin(close)) {
-        statusEl.textContent = '지금 영업 중이에요. (' + close + '까지)';
-      } else {
-        statusEl.textContent = '오늘 영업이 끝났어요.';
-      }
-    })();
-  </script>
 </body>
 </html>
